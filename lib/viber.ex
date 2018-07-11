@@ -37,7 +37,7 @@ defmodule Engine.Viber do
   def handle_call(:delete_webhook, _from, state) do
     state
     |> delete_webhook()
-    |> BotLogger.info()
+#    |> BotLogger.info()
 
     {:reply, :ok, state}
   end
