@@ -74,6 +74,8 @@ defmodule Engine.Viber do
       webhook_upload_body(%{url: server_webhook_url(conn), send_name: true}),
       webhook_header(conn)
     )
+    |> parse_body()
+    |> resolve_updates(bot_name)
     |> IO.inspect
   end
 
@@ -85,6 +87,8 @@ defmodule Engine.Viber do
       webhook_upload_body(%{url: ""}),
       webhook_header(conn)
     )
+    |> parse_body()
+    |> resolve_updates(bot_name)
     |> IO.inspect
   end
 
@@ -113,4 +117,15 @@ defmodule Engine.Viber do
       {"Content-Type", "application/json"},
     ]
   end
+
+  defp resolve_updates(
+         {
+           :ok,
+           %HTTPoison.Response{
+             status_code: 200,
+             body: body
+           }
+         },
+         _bot_params
+       ), do: body
 end
