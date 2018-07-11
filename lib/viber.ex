@@ -6,6 +6,7 @@ defmodule Engine.Viber do
   alias Agala.{BotParams, Conn}
   alias Agala.Bot.Handler
   alias Engine.Viber.{MessageSender, RequestHandler}
+  alias Engine.BotLogger
 
   use GenServer
 
@@ -17,6 +18,7 @@ defmodule Engine.Viber do
 
   def init(opts) do
     set_webhook(opts)
+    BotLogger.info("Viber bot #{opts.name} started. Method: webhook")
 
     {:ok, opts}
   end
@@ -28,14 +30,25 @@ defmodule Engine.Viber do
   def message_pass(bot_name, message) do
     GenServer.cast(:"#Engine.Viber::#{bot_name}", {:message, message})
   end
+  def pre_down(bot_name) do
+    GenServer.call(:"#Engine.Viber::#{bot_name}", :delete_webhook)
+  end
+
+  def handle_call(:delete_webhook, _from, state) do
+    state
+    |> delete_webhook()
+    |> BotLogger.info()
+
+    {:reply, :ok, state}
+  end
 
   def handle_cast({:message, %{"event" => event} = message}, state) when event == "webhook" do
-    IO.puts "Webhook for #{state.provider_params.token} was set."
+    BotLogger.info("Webhook for #{state.provider_params.token} was set.")
     {:noreply, state}
   end
 
   def handle_cast({:message, %{"event" => event, "message_token" => message_token, "user_id" => user_id} = _}, state) when event in ["delivered", "seen"] do
-    IO.puts "Message #{message_token} was #{event} for #{user_id}"
+    BotLogger.info("Message #{message_token} was #{event} for #{user_id}")
     {:noreply, state}
   end
 
@@ -57,8 +70,19 @@ defmodule Engine.Viber do
     conn = %Conn{request_bot_params: params} |> Conn.send_to(bot_name)
 
     HTTPoison.post(
-      set_webhook_url(conn),
-      webhook_upload_body(conn),
+      webhook_url(conn),
+      webhook_upload_body(%{url: server_webhook_url(conn), send_name: true}),
+      webhook_header(conn)
+    )
+    |> IO.inspect
+  end
+
+  def delete_webhook(%BotParams{name: bot_name} = params) do
+    conn = %Conn{request_bot_params: params} |> Conn.send_to(bot_name)
+
+    HTTPoison.post(
+      webhook_url(conn),
+      webhook_upload_body(%{url: ""}),
       webhook_header(conn)
     )
     |> IO.inspect
@@ -68,12 +92,12 @@ defmodule Engine.Viber do
     "https://chatapi.viber.com/pa"
   end
 
-  def set_webhook_url(_conn) do
+  def webhook_url(_conn) do
     base_url() <> "/set_webhook"
   end
 
-  defp webhook_upload_body(conn, opts \\ []),
-       do: %{url: server_webhook_url(conn), send_name: true} |> Poison.encode!
+  defp webhook_upload_body(body, opts \\ []),
+       do:  body |> Poison.encode!
 
   defp parse_body({:ok, resp = %HTTPoison.Response{body: body}}),
        do: {:ok, %HTTPoison.Response{resp | body: Poison.decode!(body)}}

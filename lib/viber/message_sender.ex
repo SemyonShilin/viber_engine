@@ -6,6 +6,7 @@ defmodule Engine.Viber.MessageSender do
   alias Engine.Viber.Helpers
   alias Agala.Conn
   alias Agala.BotParams
+  alias Engine.BotLogger
 
   def delivery(%Conn{request_bot_params: bot_params} = _conn, %{"receiver" => receiver_id} = messages) do
     IO.inspect "delivery"
@@ -57,9 +58,7 @@ defmodule Engine.Viber.MessageSender do
 #    )
 #  end
 
-  defp message_fallback(%Conn{fallback: %{"result" => %{"from" => %{"first_name" => first_name, "id" => id, "is_bot" => is_bot}, "text" => text}}} = _conn) do
-    bot_postfix = if is_bot, do: "Bot", else: ""
-    IO.puts("\n#{first_name} #{bot_postfix} #{id} : #{text}")
-    IO.puts("----> You have just sent message <----")
+  defp message_fallback()do
+
   end
 end
