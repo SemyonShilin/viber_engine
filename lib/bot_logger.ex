@@ -1,4 +1,4 @@
-defmodule Engine.BotLogger do
+defmodule Engine.Viber.BotLogger do
   @moduledoc false
   require Logger
 

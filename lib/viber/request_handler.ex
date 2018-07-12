@@ -5,7 +5,7 @@ defmodule Engine.Viber.RequestHandler do
   alias Agala.Conn
   alias Agala.BotParams
   alias Engine.Viber.MessageSender
-  alias Engine.BotLogger
+  alias Engine.Viber.BotLogger
 
   chain(Engine.Viber.Chain.Parser)
 

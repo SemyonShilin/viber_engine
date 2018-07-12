@@ -3,10 +3,9 @@ defmodule Engine.Viber.MessageSender do
   Module for sending messages to telegram
   """
 
-  alias Engine.Viber.Helpers
+  alias Engine.Viber.{Helpers, BotLogger}
   alias Agala.Conn
   alias Agala.BotParams
-  alias Engine.BotLogger
 
   def delivery(%Conn{request_bot_params: bot_params} = _conn, %{"receiver" => receiver_id} = messages) do
     IO.inspect "delivery"

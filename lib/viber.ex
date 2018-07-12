@@ -5,8 +5,7 @@ defmodule Engine.Viber do
 
   alias Agala.{BotParams, Conn}
   alias Agala.Bot.Handler
-  alias Engine.Viber.{MessageSender, RequestHandler}
-  alias Engine.BotLogger
+  alias Engine.Viber.{MessageSender, RequestHandler, BotLogger}
 
   use GenServer
 
