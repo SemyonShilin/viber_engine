@@ -3,7 +3,8 @@ defmodule Engine.Viber.MessageSender do
   Module for sending messages to telegram
   """
 
-  alias Engine.Viber.{Helpers, BotLogger}
+  alias Engine.Viber
+  alias Engine.Viber.{Helpers}
   alias Agala.Conn
   alias Agala.BotParams
 

@@ -5,7 +5,7 @@ defmodule Engine.Viber.RequestHandler do
   alias Agala.Conn
   alias Agala.BotParams
   alias Engine.Viber.MessageSender
-  alias Engine.Viber.BotLogger
+  alias Engine.Viber
 
   chain(Engine.Viber.Chain.Parser)
 
@@ -16,7 +16,7 @@ defmodule Engine.Viber.RequestHandler do
 #  chain(:delivery_hub_response_handler)
 
   def logging_incoming_message_handler(%Conn{request: request} = conn, _opts) do
-    BotLogger.info("You have just received message. #{format_request_for_log(request)}")
+    Viber.logger.info("You have just received message. #{format_request_for_log(request)}")
 
     conn
   end
@@ -40,7 +40,6 @@ defmodule Engine.Viber.RequestHandler do
   def send_messege_to_hub_handler(%Conn{
     request_bot_params: %Agala.BotParams{storage: storage} = bot_params,
     request: request} = conn, _opts) do
-    log(request)
 
     bot = storage.get(bot_params, :bot)
     %{"data" => response} =
@@ -137,17 +136,11 @@ defmodule Engine.Viber.RequestHandler do
     end
   end
 
-  defp log(%{message: %{text: text, from: %{first_name: first_name, id: user_telegrma_id}}}) do
-    IO.puts "#{first_name} #{user_telegrma_id} : #{text}"
-  end
-
-  defp log(%{callback_query: %{data: data, from: %{first_name: first_name, id: user_telegrma_id}}}) do
-    IO.puts "#{first_name} #{user_telegrma_id} : button - #{data}"
-  end
-
-  defp adapter_bot do
-    :viber_engine
-    |> Application.get_env(:get_bot_fn)
+  defp adapter_bot() do
+    with get_bot_fn <- Application.get_env(:viber_engine, :get_bot_fn),
+         {func, _}  <- Code.eval_string(get_bot_fn) do
+      func
+    end
   end
 
   defp format_request_for_log(%{sender: %{name: name}, message: %{text: text}}) do

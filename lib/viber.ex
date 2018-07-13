@@ -5,11 +5,12 @@ defmodule Engine.Viber do
 
   alias Agala.{BotParams, Conn}
   alias Agala.Bot.Handler
-  alias Engine.Viber.{MessageSender, RequestHandler, BotLogger}
+  alias Engine.Viber.{MessageSender, RequestHandler}
 
   use GenServer
 
-  @url :viber_engine |> Application.get_env(Engine.Viber) |> Keyword.get(:url)
+  @viber_engine Application.get_env(:viber_engine, Engine.Viber)
+  @url @viber_engine |> Keyword.get(:url)
 
   def start_link(opts) do
     GenServer.start_link(__MODULE__, opts, [name: :"#Engine.Viber::#{opts.name}"])
@@ -17,7 +18,7 @@ defmodule Engine.Viber do
 
   def init(opts) do
     set_webhook(opts)
-    BotLogger.info("Viber bot #{opts.name} started. Method: webhook")
+    logger.info("Viber bot #{opts.name} started. Method: webhook")
 
     {:ok, opts}
   end
@@ -36,23 +37,22 @@ defmodule Engine.Viber do
   def handle_call(:delete_webhook, _from, state) do
     state
     |> delete_webhook()
-#    |> BotLogger.info()
 
     {:reply, :ok, state}
   end
 
   def handle_cast({:message, %{"event" => event} = message}, state) when event == "webhook" do
-    BotLogger.info("Webhook for #{state.provider_params.token} was set.")
+    logger.info("Webhook for #{state.provider_params.token} was set.")
     {:noreply, state}
   end
 
   def handle_cast({:message, %{"event" => event, "message_token" => message_token, "user_id" => user_id} = _}, state) when event in ["delivered", "seen"] do
-    BotLogger.info("Message #{message_token} was #{event} for #{user_id}")
+    logger.info("Message #{message_token} was #{event} for #{user_id}")
     {:noreply, state}
   end
 
   def handle_cast({:message, message}, state) do
-    Handler.handle(message, state)
+    logger.handle(message, state)
     {:noreply, state}
   end
 
@@ -97,6 +97,11 @@ defmodule Engine.Viber do
 
   def webhook_url(_conn) do
     base_url() <> "/set_webhook"
+  end
+
+  def logger do
+    @viber_engine
+    |> Keyword.get(:logger)
   end
 
   defp webhook_upload_body(body, opts \\ []),
