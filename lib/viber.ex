@@ -18,7 +18,7 @@ defmodule Engine.Viber do
 
   def init(opts) do
     set_webhook(opts)
-    logger.info("Viber bot #{opts.name} started. Method: webhook")
+    logger().info("Viber bot #{opts.name} started. Method: webhook")
 
     {:ok, opts}
   end
@@ -42,17 +42,17 @@ defmodule Engine.Viber do
   end
 
   def handle_cast({:message, %{"event" => event} = message}, state) when event == "webhook" do
-    logger.info("Webhook for #{state.provider_params.token} was set.")
+    logger().info("Webhook for #{state.provider_params.token} was set.")
     {:noreply, state}
   end
 
   def handle_cast({:message, %{"event" => event, "message_token" => message_token, "user_id" => user_id} = _}, state) when event in ["delivered", "seen"] do
-    logger.info("Message #{message_token} was #{event} for #{user_id}")
+    logger().info("Message #{message_token} was #{event} for #{user_id}")
     {:noreply, state}
   end
 
   def handle_cast({:message, message}, state) do
-    logger.handle(message, state)
+    logger().handle(message, state)
     {:noreply, state}
   end
 

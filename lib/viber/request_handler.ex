@@ -16,7 +16,7 @@ defmodule Engine.Viber.RequestHandler do
 #  chain(:delivery_hub_response_handler)
 
   def logging_incoming_message_handler(%Conn{request: request} = conn, _opts) do
-    Viber.logger.info("You have just received message. #{format_request_for_log(request)}")
+    Viber.logger().info("You have just received message. #{format_request_for_log(request)}")
 
     conn
   end
