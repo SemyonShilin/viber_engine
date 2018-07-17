@@ -17,6 +17,7 @@ defmodule Engine.Viber do
   end
 
   def init(opts) do
+    logger().info("Viber bot #{opts.name} starts with this config #{inspect(@viber_engine)}")
     set_webhook(opts)
     logger().info("Viber bot #{opts.name} started. Method: webhook")
 
@@ -102,6 +103,16 @@ defmodule Engine.Viber do
   def logger do
     @viber_engine
     |> Keyword.get(:logger)
+  end
+
+  def hub_client do
+    @viber_engine
+    |> Keyword.get(:hub_client)
+  end
+
+  def get_bot_fn do
+    @viber_engine
+    |> Keyword.get(:get_bot_fn)
   end
 
   defp webhook_upload_body(body, opts \\ []),

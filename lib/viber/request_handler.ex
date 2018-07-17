@@ -45,7 +45,7 @@ defmodule Engine.Viber.RequestHandler do
     %{"data" => response} =
       %{data: request}
       |> Map.merge(%{platform: "viber", uid: bot.uid})
-      |> call_hub()
+      |> call_hub().()
 
     storage.set(bot_params, :response, response)
 
@@ -69,18 +69,6 @@ defmodule Engine.Viber.RequestHandler do
     conn |> MessageSender.delivery(storage.get(bot_params, :messages))
 
     conn
-  end
-
-  defp call_hub(message) do
-    HTTPoison.start
-    with {:ok, %HTTPoison.Response{body: body}} =
-           HTTPoison.post(
-             System.get_env("DCH_POST"),
-             Poison.encode!(message),
-             [{"Content-Type", "application/json"}]
-           ) do
-      Poison.decode!(body)
-    end
   end
 
   def parse_hub_response(messages) do
@@ -137,9 +125,15 @@ defmodule Engine.Viber.RequestHandler do
   end
 
   defp adapter_bot() do
-    with get_bot_fn <- Application.get_env(:viber_engine, :get_bot_fn),
+    with get_bot_fn <- Viber.get_bot_fn(),
          {func, _}  <- Code.eval_string(get_bot_fn) do
       func
+    end
+  end
+
+  def call_hub do
+    fn message ->
+      Telegram.hub_client().call(message)
     end
   end
 
