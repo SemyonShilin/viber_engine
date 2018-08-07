@@ -60,15 +60,13 @@ defmodule Engine.Viber.RequestHandler do
       |> parse_hub_response()
       |> Enum.filter(& &1)
 
-    IO.inspect message
-
     storage.set(bot_params, :messages, message)
 
     conn
   end
 
   def delivery_hub_response_handler(%Conn{request_bot_params: %{storage: storage} = bot_params} = conn, _opts) do
-#    conn |> MessageSender.delivery(storage.get(bot_params, :messages))
+    conn |> MessageSender.delivery(storage.get(bot_params, :messages))
 
     conn
   end
@@ -92,13 +90,13 @@ defmodule Engine.Viber.RequestHandler do
 
   defp format_menu_item([%{"url" => url} = menu_item | tail], state) do
     new_state =
-      [Button.make!(%{Text: menu_item["name"], ActionType: "open-url", ActionBody: url})] ++ [state]
+      [Button.make!(%{Text: menu_item["name"], ActionType: "open-url", ActionBody: url}) | state]
     format_menu_item(tail, new_state)
   end
 
   defp format_menu_item([%{"code" => code} = menu_item | tail], state) do
     new_state =
-      [Button.make!(%{Text: menu_item["name"], ActionType: "reply", ActionBody: code})] ++ [state]
+      [Button.make!(%{Text: menu_item["name"], ActionType: "reply", ActionBody: code}) | state]
     format_menu_item(tail, new_state)
   end
 
@@ -108,7 +106,9 @@ defmodule Engine.Viber.RequestHandler do
     fn {k, v}, acc ->
       case k do
         "body" -> Map.put(acc, :text, v)
-        "menu" -> type_menu(v, acc)
+        "menu" ->
+          Map.put(acc, :type, "rich_media")
+          type_menu(v, acc)
         _ -> ""
       end
     end
