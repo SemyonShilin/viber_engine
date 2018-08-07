@@ -132,7 +132,7 @@ defmodule Engine.Viber.RequestHandler do
 
   def call_hub do
     fn message ->
-      Telegram.hub_client().call(message)
+      Viber.hub_client().call(message)
     end
   end
 
