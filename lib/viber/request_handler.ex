@@ -11,9 +11,9 @@ defmodule Engine.Viber.RequestHandler do
 
   chain(:logging_incoming_message_handler)
   chain(:find_bot_handler)
-#  chain(:send_messege_to_hub_handler)
-#  chain(:parse_hub_response_handler)
-#  chain(:delivery_hub_response_handler)
+  chain(:send_messege_to_hub_handler)
+  chain(:parse_hub_response_handler)
+  chain(:delivery_hub_response_handler)
 
   def logging_incoming_message_handler(%Conn{request: request} = conn, _opts) do
     Viber.logger().info("You have just received message. #{format_request_for_log(request)}")
@@ -24,15 +24,14 @@ defmodule Engine.Viber.RequestHandler do
   def find_bot_handler(%Conn{
     request_bot_params: %BotParams{storage: storage, provider_params: %{token: token}} = bot_params, request: request} = conn,
     _opts) do
-    IO.inspect conn
-    conn |> MessageSender.delivery(%{
-      "receiver" => request.sender.id,
-      "text" => request.message.text <> "from adapter",
-      "type" => request.message.type,
-      "sender" => %{"name" => bot_params.name}
-    })
-#    bot = adapter_bot.(token)
-#    storage.set(bot_params, :bot, bot)
+#    conn |> MessageSender.delivery(%{
+#      "receiver" => request.sender.id,
+#      "text" => request.message.text <> "from adapter",
+#      "type" => request.message.type,
+#      "sender" => %{"name" => bot_params.name}
+#    })
+    bot = adapter_bot.(token)
+    storage.set(bot_params, :bot, bot)
 
     conn
   end

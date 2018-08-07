@@ -31,6 +31,7 @@ defmodule Engine.Viber do
   def message_pass(bot_name, message) do
     GenServer.cast(:"#Engine.Viber::#{bot_name}", {:message, message})
   end
+
   def pre_down(bot_name) do
     GenServer.call(:"#Engine.Viber::#{bot_name}", :delete_webhook)
   end
@@ -53,7 +54,7 @@ defmodule Engine.Viber do
   end
 
   def handle_cast({:message, message}, state) do
-    logger().handle(message, state)
+#    logger().info(message, state)
     {:noreply, state}
   end
 
