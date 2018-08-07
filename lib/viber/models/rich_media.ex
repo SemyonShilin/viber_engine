@@ -12,6 +12,6 @@ defmodule Engine.Viber.Model.RichMedia do
     field :ButtonsGroupRows, :int, default: 0
     field :BgColor, :string, default: "#FFFFFF"
     field :Type, :string, default: "rich_media"
-    field :inline_keyboard, {:array, {:array, Button}}, default: []
+    field :Buttons, {:array, {:array, Button}}, default: []
   end
 end

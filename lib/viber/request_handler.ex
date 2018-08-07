@@ -118,7 +118,7 @@ defmodule Engine.Viber.RequestHandler do
     with %{"type" => type} <- v do
       case type do
         "inline"   -> ""
-          Map.put(acc, :rich_media, RichMedia.make!(%{inline_keyboard: format_menu_item(v)}))
+          Map.put(acc, :rich_media, RichMedia.make!(%{Buttons: format_menu_item(v), ButtonsGroupColumns: 1, ButtonsGroupRows: 1}))
         "keyboard" -> ""
         "auth"     -> ""
         _          -> ""
