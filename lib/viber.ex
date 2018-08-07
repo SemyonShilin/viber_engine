@@ -53,7 +53,7 @@ defmodule Engine.Viber do
     {:noreply, state}
   end
 
-  def handle_cast({:message, %{"event" => event, "message_token" => message_token, "user_id" => user_id} = message}, state) when event in ["message"] do
+  def handle_cast({:message, %{"event" => event, "message_token" => message_token, "sender" => %{"id": user_id}} = message}, state) when event in ["message"] do
     Handler.handle(message, state)
 
     logger().info("Message #{message_token} was #{event} for #{user_id}")
