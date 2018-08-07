@@ -92,13 +92,13 @@ defmodule Engine.Viber.RequestHandler do
 
   defp format_menu_item([%{"url" => url} = menu_item | tail], state) do
     new_state =
-      [[Button.make!(%{Text: menu_item["name"], ActionType: "open-url", ActionBody: url})]| state]
+      [Button.make!(%{Text: menu_item["name"], ActionType: "open-url", ActionBody: url})] ++ [state]
     format_menu_item(tail, new_state)
   end
 
   defp format_menu_item([%{"code" => code} = menu_item | tail], state) do
     new_state =
-      [[Button.make!(%{Text: menu_item["name"], ActionType: "reply", ActionBody: code})] | state]
+      [Button.make!(%{Text: menu_item["name"], ActionType: "reply", ActionBody: code})] ++ [state]
     format_menu_item(tail, new_state)
   end
 
