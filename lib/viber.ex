@@ -56,7 +56,6 @@ defmodule Engine.Viber do
   def handle_cast({:message, %{"event" => event, "message" => %{"text" => text}, "sender" => %{"name" => user_name}} = message}, state) when event in ["message"] do
     Handler.handle(message, state)
 
-    logger().info("Message #{text} was receive from #{user_name}")
     {:noreply, state}
   end
 

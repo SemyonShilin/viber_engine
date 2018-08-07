@@ -84,28 +84,28 @@ defmodule Engine.Viber.RequestHandler do
   end
 
   defp parse_hub_response([], updated_messages), do: updated_messages |> Enum.reverse
-
-  defp format_menu_item(%{"items" => items}), do: format_menu_item(items, [])
-
-  defp format_menu_item([%{"url" => url} = menu_item | tail], state) do
-    new_state =
-      [[InlineKeyboardButton.make!(%{text: menu_item["name"], url: url})]| state]
-    format_menu_item(tail, new_state)
-  end
-
-  defp format_menu_item([%{"code" => code} = menu_item | tail], state) do
-    new_state =
-      [[InlineKeyboardButton.make!(%{text: menu_item["name"], callback_data: code})] | state]
-    format_menu_item(tail, new_state)
-  end
-
-  defp format_menu_item([], state), do: state |> Enum.reverse
+#
+#  defp format_menu_item(%{"items" => items}), do: format_menu_item(items, [])
+#
+#  defp format_menu_item([%{"url" => url} = menu_item | tail], state) do
+#    new_state =
+#      [[InlineKeyboardButton.make!(%{text: menu_item["name"], url: url})]| state]
+#    format_menu_item(tail, new_state)
+#  end
+#
+#  defp format_menu_item([%{"code" => code} = menu_item | tail], state) do
+#    new_state =
+#      [[InlineKeyboardButton.make!(%{text: menu_item["name"], callback_data: code})] | state]
+#    format_menu_item(tail, new_state)
+#  end
+#
+#  defp format_menu_item([], state), do: state |> Enum.reverse
 
   defp message_mapping do
     fn {k, v}, acc ->
       case k do
         "body" -> Map.put(acc, :text, v)
-        "menu" -> type_menu(v, acc)
+        "menu" -> []#type_menu(v, acc)
         _ -> ""
       end
     end
@@ -114,8 +114,8 @@ defmodule Engine.Viber.RequestHandler do
   defp type_menu(v, acc) do
     with %{"type" => type} <- v do
       case type do
-        "inline"   ->
-          Map.put(acc, :reply_markup, InlineKeyboardMarkup.make!(%{inline_keyboard: format_menu_item(v)}))
+        "inline"   -> ""
+#          Map.put(acc, :rich_media, InlineKeyboardMarkup.make!(%{inline_keyboard: format_menu_item(v)}))
         "keyboard" -> ""
         "auth"     -> ""
         _          -> ""
