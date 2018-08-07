@@ -29,8 +29,6 @@ defmodule Engine.Viber do
   end
 
   def message_pass(bot_name, message) do
-    IO.inspect bot_name
-    IO.inspect message
     GenServer.cast(:"#Engine.Viber::#{bot_name}", {:message, message})
   end
 
@@ -55,10 +53,17 @@ defmodule Engine.Viber do
     {:noreply, state}
   end
 
-  def handle_cast({:message, message}, state) do
-#    logger().info(message, state)
+  def handle_cast({:message, %{"event" => event, "message_token" => message_token, "user_id" => user_id} = message}, state) when event in ["message"] do
+    Handler.handle(message, state)
+
+    logger().info("Message #{message_token} was #{event} for #{user_id}")
     {:noreply, state}
   end
+
+#  def handle_cast({:message, message}, state) do
+#    logger().info(message, state)
+#    {:noreply, state}
+#  end
 
   def handle_cast({:message, _hub, %{"data" => %{"messages" => messages, "chat" => %{"id" => id}}} =  _message}, state) do
     messages
