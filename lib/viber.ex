@@ -29,6 +29,8 @@ defmodule Engine.Viber do
   end
 
   def message_pass(bot_name, message) do
+    IO.inspect bot_name
+    IO.inspect message
     GenServer.cast(:"#Engine.Viber::#{bot_name}", {:message, message})
   end
 
