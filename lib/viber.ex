@@ -125,7 +125,7 @@ defmodule Engine.Viber do
   defp parse_body(default), do: default
 
   defp server_webhook_url(conn),
-       do: @url <> conn.request_bot_params.provider_params.token
+       do: @url <> conn.request_bot_params.name
 
   defp webhook_header(conn) do
     [
