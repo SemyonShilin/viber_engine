@@ -7,7 +7,7 @@ defmodule Engine.Viber.Helpers do
   @base_url "https://chatapi.viber.com/pa"
 
   @spec send_message(conn :: Agala.Conn.t, message :: String.t, opts :: Enum.t) :: Agala.Conn.t
-  def send_message(conn, chat_id, message, opts \\ []) do
+  def send_message(conn, message, opts \\ []) do
     Map.put(conn, :response, %Response{
       method: :post,
       payload: %{

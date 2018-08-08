@@ -27,8 +27,9 @@ defmodule Engine.Viber.MessageSender do
 
   def answer(%BotParams{name: bot_name} = params, viber_receiver_id, message = %{}) do
     Agala.response_with(
-      %Conn{request_bot_params: params} |> Conn.send_to(bot_name)
-      |> Helpers.send_message(viber_receiver_id, message, [])
+      %Conn{request_bot_params: params}
+      |> Conn.send_to(bot_name)
+      |> Helpers.send_message(Map.merge(message, %{receiver: viber_receiver_id, type: "rich_media", min_api_version: 2}), [])
       |> IO.inspect
       #      |> Conn.with_fallback(&message_fallback(&1))
     )
@@ -39,7 +40,7 @@ defmodule Engine.Viber.MessageSender do
       %Conn{request_bot_params: params} |> Conn.send_to(bot_name)
       |> Helpers.send_message(viber_receiver_id, message, [])
       |> IO.inspect
-#      |> Conn.with_fallback(&message_fallback(&1))
+      #      |> Conn.with_fallback(&message_fallback(&1))
     )
   end
 #
