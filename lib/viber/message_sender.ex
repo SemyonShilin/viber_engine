@@ -33,6 +33,7 @@ defmodule Engine.Viber.MessageSender do
       |> IO.inspect
       #      |> Conn.with_fallback(&message_fallback(&1))
     )
+    |> IO.inspect
   end
 
   def answer(%BotParams{name: bot_name} = params, viber_receiver_id, message) do
