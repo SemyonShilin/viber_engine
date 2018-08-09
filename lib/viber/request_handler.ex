@@ -90,13 +90,13 @@ defmodule Engine.Viber.RequestHandler do
 
   defp format_menu_item([%{"url" => url} = menu_item | tail], state) do
     new_state =
-      [Button.make!(%{Text: menu_item["name"], ActionType: "open-url", ActionBody: url}) | state]
+      [Button.make!(%{Text: menu_item["name"], ActionType: "open-url", ActionBody: url, Columns: 6, Rows: 3}) | state]
     format_menu_item(tail, new_state)
   end
 
   defp format_menu_item([%{"code" => code} = menu_item | tail], state) do
     new_state =
-      [Button.make!(%{Text: menu_item["name"], ActionType: "reply", ActionBody: code}) | state]
+      [Button.make!(%{Text: menu_item["name"], ActionType: "reply", ActionBody: code, Columns: 6, Rows: 3}) | state]
     format_menu_item(tail, new_state)
   end
 
@@ -118,7 +118,7 @@ defmodule Engine.Viber.RequestHandler do
     with %{"type" => type} <- v do
       case type do
         "inline"   -> ""
-          Map.put(acc, :rich_media, RichMedia.make!(%{Buttons: format_menu_item(v), ButtonsGroupColumns: 1, ButtonsGroupRows: 1}))
+          Map.put(acc, :rich_media, RichMedia.make!(%{Buttons: format_menu_item(v)}))
         "keyboard" -> ""
         "auth"     -> ""
         _          -> ""

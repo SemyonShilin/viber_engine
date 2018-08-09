@@ -8,8 +8,8 @@ defmodule Engine.Viber.Model.RichMedia do
 
   structure do
     field :Type, :string, default: "rich_media"
-    field :ButtonsGroupColumns, :integer, default: 0
-    field :ButtonsGroupRows, :integer, default: 0
+    field :ButtonsGroupColumns, :integer, default: 6
+    field :ButtonsGroupRows, :integer, default: 7
     field :BgColor, :string, default: "#FFFFFF"
     field :Type, :string, default: "rich_media"
     field :Buttons, {:array, Button}, default: []

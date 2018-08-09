@@ -6,8 +6,8 @@ defmodule Engine.Viber.Model.Button do
   use Construct
 
   structure do
-    field :Columns, :integer, default: 0
-    field :Rows, :integer, default: 0
+    field :Columns, :integer, default: 1
+    field :Rows, :integer, default: 1
     field :ActionType, :string
     field :ActionBody, :string, default: ""
     field :Text, :string
