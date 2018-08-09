@@ -14,7 +14,8 @@ defmodule Engine.Viber.MessageSender do
 
     messages
     |> Enum.each(fn mess ->
-      answer(bot_params, id, mess)
+      answer(bot_params, id, %{text: mess.text})
+      answer(bot_params, id, Map.delete(mess, :text))
     end)
   end
 
@@ -33,13 +34,12 @@ defmodule Engine.Viber.MessageSender do
       |> IO.inspect
       #      |> Conn.with_fallback(&message_fallback(&1))
     )
-    |> IO.inspect
   end
 
   def answer(%BotParams{name: bot_name} = params, viber_receiver_id, message) do
     Agala.response_with(
       %Conn{request_bot_params: params} |> Conn.send_to(bot_name)
-      |> Helpers.send_message(viber_receiver_id, message, [])
+      |> Helpers.send_message(Map.merge(message, %{receiver: viber_receiver_id, type: "text", min_api_version: 1}), [])
       |> IO.inspect
       #      |> Conn.with_fallback(&message_fallback(&1))
     )

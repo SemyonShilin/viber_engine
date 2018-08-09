@@ -13,7 +13,7 @@ defmodule Engine.Viber.Responser do
   Main entry point method. Process the response
   """
   def response(conn, bot_params) do
-    case IO.inspect HTTPoison.request(
+    case HTTPoison.request(
       conn.response.method,
       create_url(conn, bot_params),
       create_body(conn),
