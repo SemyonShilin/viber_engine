@@ -1,11 +1,9 @@
 defmodule Engine.Viber.Conn.ProviderParams do
-  defstruct [
-    token: nil
-  ]
+  defstruct token: nil
 
   @type t :: %Engine.Viber.Conn.ProviderParams{
-               token: String.t()
-             }
+          token: String.t()
+        }
 
   @behaviour Access
   @doc false

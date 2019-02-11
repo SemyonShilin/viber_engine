@@ -6,7 +6,7 @@ defmodule Engine.Viber.Model.Message do
   use Construct
 
   structure do
-    field :text, :string, default: nil
-    field :type, :string, default: nil
+    field(:text, :string, default: nil)
+    field(:type, :string, default: nil)
   end
 end

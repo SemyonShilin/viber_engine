@@ -1,15 +1,13 @@
 defmodule Engine.Viber.Conn.Response do
-  defstruct [
-    method: nil,
-    payload: %{},
-    opts: []
-  ]
+  defstruct method: nil,
+            payload: %{},
+            opts: []
 
   @type t :: %Engine.Viber.Conn.Response{
-               method: :post | :get | :put | :delete,
-               payload: map(),
-               opts: Keyword.t
-             }
+          method: :post | :get | :put | :delete,
+          payload: map(),
+          opts: Keyword.t()
+        }
 
   @behaviour Access
   @doc false

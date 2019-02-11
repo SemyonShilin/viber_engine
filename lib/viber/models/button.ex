@@ -6,14 +6,14 @@ defmodule Engine.Viber.Model.Button do
   use Construct
 
   structure do
-    field :Columns, :integer, default: 1
-    field :Rows, :integer, default: 1
-    field :ActionType, :string
-    field :ActionBody, :string, default: ""
-    field :Text, :string
-    field :TextSize, :string, default: "medium"
-    field :TextVAlign, :string, default: "middle"
-    field :TextHAlign, :string, default: "middle"
-    field :Image, :string, default: ""
+    field(:Columns, :integer, default: 1)
+    field(:Rows, :integer, default: 1)
+    field(:ActionType, :string)
+    field(:ActionBody, :string, default: "")
+    field(:Text, :string)
+    field(:TextSize, :string, default: "medium")
+    field(:TextVAlign, :string, default: "middle")
+    field(:TextHAlign, :string, default: "middle")
+    field(:Image, :string, default: "")
   end
 end

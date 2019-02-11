@@ -1,5 +1,6 @@
 defmodule Engine.Viber.Provider do
   use Agala.Provider
+
   @moduledoc """
   Module providing Viber
   """

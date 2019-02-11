@@ -7,10 +7,10 @@ defmodule Engine.Viber.Model.User do
   use Construct
 
   structure do
-    field :api_version, :integer
-    field :country, :string
-    field :id, :string
-    field :language, :string, default: nil
-    field :name, :string, default: nil
+    field(:api_version, :integer)
+    field(:country, :string)
+    field(:id, :string)
+    field(:language, :string, default: nil)
+    field(:name, :string, default: nil)
   end
 end

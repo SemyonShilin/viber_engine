@@ -15,17 +15,20 @@ defmodule Engine.Viber.Chain.Parser do
   Function is used as a convention for `Agala.Chain` behaviour, but is not used yet.
   Options, passed to the function will be omitted.
   """
-  @spec init(opts :: Keyword.t) :: Keyword.t
+  @spec init(opts :: Keyword.t()) :: Keyword.t()
   def init(opts), do: opts
 
   @doc """
   Method takes JSON decoded incoming message from the `Agala.Conn` by `:request` key,
   parses it and puts back in `Agala.Conn` with `:request` key.
   """
-  @spec call(conn :: Agala.Conn.t, opts :: Keyword.t) :: Agala.Conn.t
-  def call(conn = %Agala.Conn{
-    request: request
-  }, _opts) do
+  @spec call(conn :: Agala.Conn.t(), opts :: Keyword.t()) :: Agala.Conn.t()
+  def call(
+        conn = %Agala.Conn{
+          request: request
+        },
+        _opts
+      ) do
     conn
     |> Map.put(:request, Update.make!(request))
   end

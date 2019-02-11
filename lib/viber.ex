@@ -13,7 +13,7 @@ defmodule Engine.Viber do
   @url @viber_engine |> Keyword.get(:url)
 
   def start_link(opts) do
-    GenServer.start_link(__MODULE__, opts, [name: :"#Engine.Viber::#{opts.name}"])
+    GenServer.start_link(__MODULE__, opts, name: :"#Engine.Viber::#{opts.name}")
   end
 
   def init(opts) do
@@ -48,23 +48,38 @@ defmodule Engine.Viber do
     {:noreply, state}
   end
 
-  def handle_cast({:message, %{"event" => event, "message_token" => message_token, "user_id" => user_id} = _}, state) when event in ["delivered", "seen"] do
+  def handle_cast(
+        {:message,
+         %{"event" => event, "message_token" => message_token, "user_id" => user_id} = _},
+        state
+      )
+      when event in ["delivered", "seen"] do
     logger().info("Message #{message_token} was #{event} for #{user_id}")
     {:noreply, state}
   end
 
-  def handle_cast({:message, %{"event" => event, "message" => %{"text" => text}, "sender" => %{"name" => user_name}} = message}, state) when event in ["message"] do
+  def handle_cast(
+        {:message,
+         %{"event" => event, "message" => %{"text" => text}, "sender" => %{"name" => user_name}} =
+           message},
+        state
+      )
+      when event in ["message"] do
     Handler.handle(message, state)
 
     {:noreply, state}
   end
 
-#  def handle_cast({:message, message}, state) do
-#    logger().info(message, state)
-#    {:noreply, state}
-#  end
+  #  def handle_cast({:message, message}, state) do
+  #    logger().info(message, state)
+  #    {:noreply, state}
+  #  end
 
-  def handle_cast({:message, _hub, %{"data" => %{"messages" => messages, "chat" => %{"id" => id}}} =  _message}, state) do
+  def handle_cast(
+        {:message, _hub,
+         %{"data" => %{"messages" => messages, "chat" => %{"id" => id}}} = _message},
+        state
+      ) do
     messages
     |> RequestHandler.parse_hub_response()
     |> Enum.filter(& &1)
@@ -83,7 +98,7 @@ defmodule Engine.Viber do
     )
     |> parse_body()
     |> resolve_updates(bot_name)
-    |> IO.inspect
+    |> IO.inspect()
   end
 
   def delete_webhook(%BotParams{name: bot_name} = params) do
@@ -96,7 +111,7 @@ defmodule Engine.Viber do
     )
     |> parse_body()
     |> resolve_updates(bot_name)
-    |> IO.inspect
+    |> IO.inspect()
   end
 
   def base_url do
@@ -123,20 +138,20 @@ defmodule Engine.Viber do
   end
 
   defp webhook_upload_body(body, opts \\ []),
-       do:  body |> Poison.encode!
+    do: body |> Poison.encode!()
 
   defp parse_body({:ok, resp = %HTTPoison.Response{body: body}}),
-       do: {:ok, %HTTPoison.Response{resp | body: Poison.decode!(body)}}
+    do: {:ok, %HTTPoison.Response{resp | body: Poison.decode!(body)}}
 
   defp parse_body(default), do: default
 
   defp server_webhook_url(conn),
-       do: @url <> conn.request_bot_params.name
+    do: @url <> conn.request_bot_params.name
 
   defp webhook_header(conn) do
     [
       {"X-Viber-Auth-Token", to_string(conn.request_bot_params.provider_params.token)},
-      {"Content-Type", "application/json"},
+      {"Content-Type", "application/json"}
     ]
   end
 
@@ -149,5 +164,6 @@ defmodule Engine.Viber do
            }
          },
          _bot_params
-       ), do: body
+       ),
+       do: body
 end

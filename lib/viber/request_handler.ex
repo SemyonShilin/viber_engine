@@ -22,26 +22,35 @@ defmodule Engine.Viber.RequestHandler do
     conn
   end
 
-  def find_bot_handler(%Conn{
-    request_bot_params: %BotParams{storage: storage, provider_params: %{token: token}} = bot_params, request: request} = conn,
-    _opts) do
-#    conn |> MessageSender.delivery(%{
-#      "receiver" => request.sender.id,
-#      "text" => request.message.text <> "from adapter",
-#      "type" => request.message.type,
-#      "sender" => %{"name" => bot_params.name}
-#    })
+  def find_bot_handler(
+        %Conn{
+          request_bot_params:
+            %BotParams{storage: storage, provider_params: %{token: token}} = bot_params,
+          request: request
+        } = conn,
+        _opts
+      ) do
+    #    conn |> MessageSender.delivery(%{
+    #      "receiver" => request.sender.id,
+    #      "text" => request.message.text <> "from adapter",
+    #      "type" => request.message.type,
+    #      "sender" => %{"name" => bot_params.name}
+    #    })
     bot = adapter_bot.(token)
     storage.set(bot_params, :bot, bot)
 
     conn
   end
 
-  def send_messege_to_hub_handler(%Conn{
-    request_bot_params: %Agala.BotParams{storage: storage} = bot_params,
-    request: request} = conn, _opts) do
-
+  def send_messege_to_hub_handler(
+        %Conn{
+          request_bot_params: %Agala.BotParams{storage: storage} = bot_params,
+          request: request
+        } = conn,
+        _opts
+      ) do
     bot = storage.get(bot_params, :bot)
+
     %{"data" => response} =
       %{data: request}
       |> Map.merge(%{platform: "viber", uid: bot.uid})
@@ -52,7 +61,10 @@ defmodule Engine.Viber.RequestHandler do
     conn
   end
 
-  def parse_hub_response_handler(%Conn{request_bot_params: %{storage: storage} = bot_params} = conn, _opts) do
+  def parse_hub_response_handler(
+        %Conn{request_bot_params: %{storage: storage} = bot_params} = conn,
+        _opts
+      ) do
     message =
       bot_params
       |> storage.get(:response)
@@ -65,7 +77,10 @@ defmodule Engine.Viber.RequestHandler do
     conn
   end
 
-  def delivery_hub_response_handler(%Conn{request_bot_params: %{storage: storage} = bot_params} = conn, _opts) do
+  def delivery_hub_response_handler(
+        %Conn{request_bot_params: %{storage: storage} = bot_params} = conn,
+        _opts
+      ) do
     conn |> MessageSender.delivery(storage.get(bot_params, :messages))
 
     conn
@@ -84,32 +99,54 @@ defmodule Engine.Viber.RequestHandler do
     parse_hub_response(tail, [messages | formatted_messages])
   end
 
-  defp parse_hub_response([], updated_messages), do: updated_messages |> Enum.reverse
+  defp parse_hub_response([], updated_messages), do: updated_messages |> Enum.reverse()
 
   defp format_menu_item(%{"items" => items}), do: format_menu_item(items, [])
 
   defp format_menu_item([%{"url" => url} = menu_item | tail], state) do
-    new_state =
-      [Button.make!(%{Text: menu_item["name"], ActionType: "open-url", ActionBody: url, Columns: 6, Rows: 3}) | state]
+    new_state = [
+      Button.make!(%{
+        Text: menu_item["name"],
+        ActionType: "open-url",
+        ActionBody: url,
+        Columns: 6,
+        Rows: 3
+      })
+      | state
+    ]
+
     format_menu_item(tail, new_state)
   end
 
   defp format_menu_item([%{"code" => code} = menu_item | tail], state) do
-    new_state =
-      [Button.make!(%{Text: menu_item["name"], ActionType: "reply", ActionBody: code, Columns: 6, Rows: 3}) | state]
+    new_state = [
+      Button.make!(%{
+        Text: menu_item["name"],
+        ActionType: "reply",
+        ActionBody: code,
+        Columns: 6,
+        Rows: 3
+      })
+      | state
+    ]
+
     format_menu_item(tail, new_state)
   end
 
-  defp format_menu_item([], state), do: state |> Enum.reverse
+  defp format_menu_item([], state), do: state |> Enum.reverse()
 
   defp message_mapping do
     fn {k, v}, acc ->
       case k do
-        "body" -> Map.put(acc, :text, v)
+        "body" ->
+          Map.put(acc, :text, v)
+
         "menu" ->
           Map.put(acc, :type, "rich_media")
           type_menu(v, acc)
-        _ -> ""
+
+        _ ->
+          ""
       end
     end
   end
@@ -117,18 +154,25 @@ defmodule Engine.Viber.RequestHandler do
   defp type_menu(v, acc) do
     with %{"type" => type} <- v do
       case type do
-        "inline"   -> ""
+        "inline" ->
+          ""
           Map.put(acc, :rich_media, RichMedia.make!(%{Buttons: format_menu_item(v)}))
-        "keyboard" -> ""
-        "auth"     -> ""
-        _          -> ""
+
+        "keyboard" ->
+          ""
+
+        "auth" ->
+          ""
+
+        _ ->
+          ""
       end
     end
   end
 
   defp adapter_bot() do
     with get_bot_fn <- Viber.get_bot_fn(),
-         {func, _}  <- Code.eval_string(get_bot_fn) do
+         {func, _} <- Code.eval_string(get_bot_fn) do
       func
     end
   end
